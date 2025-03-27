@@ -41,10 +41,19 @@ MAJOR_LAST_RELEASE=$(echo "${LAST_RELEASE}" | awk -v l=${#NEXT_RELEASE} '{ strin
 echo "Last major release : ${MAJOR_LAST_RELEASE}"
 
 if [ "${MAJOR_LAST_RELEASE}" = "${NEXT_RELEASE}" ]; then
+  # If there's already a release on this major version, grab the minor part and increment it
   MINOR_LAST_RELEASE="$(echo "${LAST_RELEASE}" | awk -v l=$((${#NEXT_RELEASE} + 2)) '{ string=substr($0, l); print string; }')"
-  NEXT_RELEASE=${MAJOR_LAST_RELEASE}${PATCH_SEPARATOR}$((MINOR_LAST_RELEASE + 1))
-  echo "Minor release"
+  NEW_MINOR=$(printf "%03d" $((10#$MINOR_LAST_RELEASE + 1)))
+  #NEXT_RELEASE=${MAJOR_LAST_RELEASE}${PATCH_SEPARATOR}$((MINOR_LAST_RELEASE + 1))
+  echo "Minor release incremented to ${NEW_MINOR}"
+else
+  # If no matching major release, start with 001
+  NEW_MINOR="001"
+  echo "Starting minor release at ${NEW_MINOR}"
 fi
+
+# Always append the minor version
+NEXT_RELEASE="${NEXT_RELEASE}${PATCH_SEPARATOR}${NEW_MINOR}"
 
 if [ "${NAME}" = "0" ]; then
   NAME="release: version ${NEXT_RELEASE}"
