@@ -1,6 +1,6 @@
 # Calver Releaser for Github Actions
 
-Create calver release (YYYY.VV)
+Create calver release (YYYY.VV.XXX) - XXX is the patch number
 
 ## Inputs
 
