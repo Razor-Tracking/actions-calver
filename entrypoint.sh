@@ -60,7 +60,7 @@ if [ "${NAME}" = "0" ]; then
 fi
 
 if [ "${MESSAGE}" = "0" ]; then
-  MESSAGE=$(conventional-changelog)
+  MESSAGE=$(git log "${LAST_RELEASE}"..HEAD --first-parent --pretty=format:"%s")
 fi
 
 echo "Next release : ${NEXT_RELEASE}"
