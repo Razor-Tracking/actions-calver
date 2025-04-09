@@ -14,7 +14,7 @@ The title of the release. Default `release: version ${NEXT_RELEASE}`.
 
 ### `message`
 
-The message of the release. Default generate conventional changelog.
+The message of the release. Defaults to `git log "${LAST_RELEASE}"..HEAD --first-parent --pretty=format:"%s"`.
 
 ### `draft`
 
