@@ -59,18 +59,13 @@ if [ "${NAME}" = "0" ]; then
   NAME="release: version ${NEXT_RELEASE}"
 fi
 
-# RAW_MESSAGE is used for multi-line output to GITHUB_OUTPUT.
-# ESCAPED_MESSAGE is used for JSON encoding in GitHub's release API (to preserve line breaks as \n).
-RAW_MESSAGE=$(git log "${LAST_RELEASE}"..HEAD --first-parent --pretty=format:"%s")
-ESCAPED_MESSAGE=$(printf '%s\n' "$RAW_MESSAGE" | sed ':a;N;$!ba;s/\n/\\n/g')
-
 if [ "${MESSAGE}" = "0" ]; then
-  MESSAGE="$RAW_MESSAGE"
+  MESSAGE=$(git log "${LAST_RELEASE}"..HEAD --first-parent --pretty=format:"%s")
 fi
 
 echo "Next release : ${NEXT_RELEASE}"
 
-echo "${RAW_MESSAGE}"
+echo "${MESSAGE}"
 
 echo "Create release : ${CREATE_RELEASE}"
 
@@ -79,7 +74,7 @@ if [ "${CREATE_RELEASE}" = "true" ] || [ "${CREATE_RELEASE}" = true ]; then
     --arg tn "$NEXT_RELEASE" \
     --arg tc "$BRANCH" \
     --arg n "$NAME" \
-    --arg b "$ESCAPED_MESSAGE" \
+    --arg b "$MESSAGE" \
     --argjson d "$DRAFT" \
     --argjson p "$PRE" \
     '{tag_name: $tn, target_commitish: $tc, name: $n, body: $b, draft: $d, prerelease: $p}')
@@ -95,6 +90,6 @@ fi
   echo "pre=${PRE}";
   echo "created=${CREATE_RELEASE}";
   echo "changelog<<EOF";
-  echo "${RAW_MESSAGE}";
+  echo "${MESSAGE}";
   echo "EOF";
 } >> "${GITHUB_OUTPUT}"
