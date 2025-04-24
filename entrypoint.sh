@@ -24,7 +24,8 @@ PATCH_SEPARATOR="${9}"
 git config --global --add safe.directory "${GITHUB_WORKSPACE}"
 
 # Fetch git tags
-git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+git fetch --unshallow || true
+git fetch --tags origin +refs/tags/*:refs/tags/*
 
 NEXT_RELEASE=$(date "+${DATE_FORMAT}")
 
@@ -78,7 +79,9 @@ if [ "${CREATE_RELEASE}" = "true" ] || [ "${CREATE_RELEASE}" = true ]; then
     --argjson d "$DRAFT" \
     --argjson p "$PRE" \
     '{tag_name: $tn, target_commitish: $tc, name: $n, body: $b, draft: $d, prerelease: $p}')
+  echo "==== JSON PAYLOAD (before curl) ===="
   echo "${JSON_STRING}"
+  echo "==== END JSON PAYLOAD ===="
   OUTPUT=$(curl -s --data "${JSON_STRING}" -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases")
   echo "${OUTPUT}" | jq
 fi
